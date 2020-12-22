@@ -13,18 +13,19 @@ client = TelegramClient('alex', api_id, api_hash)
 
 @client.on(events.NewMessage(outgoing=True, pattern='!admin', forwards=False))
 async def handler(event):
-    logging.info("receive !admin")
-    admins = ""
-    async for user in client.iter_participants(event.chat):
-        try:
+    try:
+        logging.info("triggered on %s", event.chat.title)
+        admins = ""
+        async for user in client.iter_participants(event.chat):
             if user.participant.admin_rights.delete_messages:
                 admins += str(" @" + user.username)
-        except AttributeError:
-            pass
 
-    m = await event.respond(admins)
-    await asyncio.sleep(5)
-    await client.delete_messages(event.chat_id, [event.id])
+        if admins:
+            logging.info("fount admins: %s ", admins)
+            await event.respond(admins)
+        await client.delete_messages(event.chat_id, [event.id])
+    except AttributeError:
+        pass
 
 
 client.connect()
