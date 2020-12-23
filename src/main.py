@@ -15,17 +15,19 @@ client = TelegramClient('alex', api_id, api_hash)
 async def handler(event):
     try:
         logging.info("triggered on %s", event.chat.title)
-        admins = ""
-        async for user in client.iter_participants(event.chat):
-            if user.participant.admin_rights.delete_messages:
-                admins += str(" @" + user.username)
-
-        if admins:
-            logging.info("fount admins: %s ", admins)
-            await event.respond(admins)
-        await client.delete_messages(event.chat_id, [event.id])
     except AttributeError:
         pass
+    admins = ""
+    async for user in client.iter_participants(event.chat):
+        try:
+            if user.participant.admin_rights.delete_messages:
+                admins += str(" @" + user.username)
+        except AttributeError:
+            pass
+    if admins:
+        logging.info("fount admins: %s ", admins)
+        await event.respond(admins)
+    await client.delete_messages(event.chat_id, [event.id])
 
 
 client.connect()
