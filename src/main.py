@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 
@@ -23,6 +22,8 @@ async def handler(event):
             if user.participant.admin_rights.delete_messages:
                 admins += str(" @" + user.username)
         except AttributeError:
+            pass
+        except TypeError:
             pass
     if admins:
         logging.info("fount admins: %s ", admins)
